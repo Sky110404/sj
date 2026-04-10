@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>企业员工考勤与薪资管理系统</title>
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport">
+    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft YaHei", sans-serif;
+        }
+        body {
+            background: #f5f7fa;
+            height: 100vh;
+            overflow: hidden;
+        }
+        .login {
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f5f7fa;
+        }
+        .login-box {
+            width: 420px;
+            background: #fff;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+        .login-box .logo {
+            text-align: center;
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 30px;
+            color: #2c3e50;
+        }
+        .input-item {
+            margin-bottom: 20px;
+        }
+        .input-item label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: #666;
+        }
+        .input-item input {
+            width: 100%;
+            height: 44px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 0 15px;
+            outline: none;
+        }
+        .login-btn {
+            width: 100%;
+            height: 46px;
+            background: #4facfe;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+        .login-btn:hover {
+            background: #3da6f7;
+        }
+        .to-reg, .to-login {
+            text-align: center;
+            font-size: 14px;
+            color: #666;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .to-reg span, .to-login span {
+            color: #4facfe;
+        }
+        .register {
+            display: none;
+        }
+        .system {
+            display: none;
+            height: 100vh;
+            display: flex;
+        }
+        .sidebar {
+            width: 240px;
+            background: #2c3e50;
+            color: white;
+            height: 100vh;
+            padding-top: 20px;
+            position: fixed;
+            left: 0;
+            top: 0;
+            overflow-y: auto;
+        }
+        .sidebar .logo {
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            padding: 10px 0;
+            border-bottom: 1px solid #34495e;
+            margin-bottom: 20px;
+        }
+        .sidebar ul {
+            list-style: none;
+        }
+        .sidebar li {
+            padding: 12px 25px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .sidebar li:hover {
+            background: #34495e;
+            padding-left: 30px;
+        }
+        .sidebar li i {
+            margin-right: 10px;
+            width: 16px;
+            text-align: center;
+        }
+        .sidebar .title {
+            padding: 10px 25px;
+            font-size: 12px;
+            color: #95a6a6;
+        }
+        .main {
+            flex: 1;
+            margin-left: 240px;
+            display: flex;
+            flex-direction: column;
+        }
+        .header {
+            height: 65px;
+            background: white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 30px;
+        }
+        .header .left {
+            font-size: 20px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        .header .user {
+            cursor: pointer;
+            font-size: 15px;
+        }
+        .content {
+            flex: 1;
+            padding: 25px;
+            overflow-y: auto;
+        }
+        .panel {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .panel h3 {
+            margin-bottom: 15px;
+            font-size: 16px;
+            color: #333;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+        }
+        .card {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .card .icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            color: white;
+        }
+        .icon.blue { background: linear-gradient(135deg, #4facfe, #00c6ff); }
+        .icon.green { background: linear-gradient(135deg, #43e97b, #38f9d7); }
+        .icon.orange { background: linear-gradient(135deg, #ffd86b, #ffa86b); }
+        .icon.purple { background: linear-gradient(135deg, #a88beb, #f8cdda); }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        table th, table td {
+            padding: 12px;
+            text-align: left;
+            font-size: 14px;
+            border-bottom: 1px solid #eee;
+        }
+        table th {
+            color: #7f8c8d;
+            font-weight: normal;
+        }
+        .tag {
+            padding: 4px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+        }
+        .tag.blue { background: #e6f7ff; color: #1890ff; }
+        .tag.orange { background: #fff7e6; color: #fa8c16; }
+        .tag.green { background: #f6ffed; color: #52c41a; }
+        .tag.red { background: #fff1f0; color: #ff4d4f; }
+        .btn {
+            padding: 6px 14px;
+            background: #4facfe;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-right: 6px;
+            font-size: 14px;
+        }
+        .btn.green { background: #52c41a; }
+        .btn.orange { background: #fa8c16; }
+        .btn.red { background: #ff4d4f; }
+        .page { display: none; }
+        .page.active { display: block; }
+        .modal {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.3);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 999;
+        }
+        .modal-box {
+            width: 460px;
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+        }
+        .hide { display: none !important; }
+        .pay-add { color: #52c41a; font-weight: bold; }
+        .pay-sub { color: #ff4d4f; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<!-- 登录 -->
+<div class="login" id="loginPage">
+    <div class="login-box" id="loginForm">
+        <div class="logo"><i class="fa fa-users"></i> 考勤与薪资管理系统</div>
+        <div class="input-item">
+            <label>账号</label>
+            <input type="text" id="loginUser" value="admin">
+        </div>
+        <div class="input-item">
+            <label>密码</label>
+            <input type="password" id="loginPwd" value="123456">
+        </div>
+        <button class="login-btn" onclick="doLogin()">登录系统</button>
+        <div class="to-reg">没有账号？<span onclick="goReg()">立即注册</span></div>
+        <div style="text-align:center;margin-top:15px;font-size:12px;color:#999">
+            管理员：admin / 123456<br>
+            普通账户：user / 123456
+        </div>
+    </div>
+
+    <!-- 注册 -->
+    <div class="login-box register" id="regForm">
+        <div class="logo"><i class="fa fa-user-plus"></i> 用户注册</div>
+        <div class="input-item">
+            <label>设置账号</label>
+            <input type="text" id="regUser" placeholder="请输入账号">
+        </div>
+        <div class="input-item">
+            <label>设置密码</label>
+            <input type="password" id="regPwd" placeholder="请输入密码">
+        </div>
+        <button class="login-btn" onclick="doReg()">注册</button>
+        <div class="to-login">已有账号？<span onclick="goLogin()">返回登录</span></div>
+    </div>
+</div>
+
+<!-- 主系统 -->
+<div class="system" id="systemPage" style="display:none;">
+    <div class="sidebar">
+        <div class="logo">考勤薪资管理系统</div>
+        <div class="title">功能菜单</div>
+        <ul>
+            <li onclick="showPage('home')"><i class="fa fa-home"></i> 控制台首页</li>
+            <li class="admin-menu" onclick="showPage('employee')"><i class="fa fa-users"></i> 员工管理</li>
+            <li class="admin-menu" onclick="showPage('dept')"><i class="fa fa-sitemap"></i> 部门岗位</li>
+            <li class="admin-menu" onclick="showPage('shift')"><i class="fa fa-clock"></i> 班次管理</li>
+            <li class="admin-menu" onclick="showPage('attendance')"><i class="fa fa-card"></i> 打卡记录</li>
+            <li onclick="showPage('leave')"><i class="fa fa-plane-departure"></i> 请假加班</li>
+            <li onclick="showPage('salary')"><i class="fa fa-sack-dollar"></i> 薪资明细</li>
+            <li onclick="logout()"><i class="fa fa-sign-out"></i> 退出登录</li>
+        </ul>
+    </div>
+
+    <div class="main">
+        <div class="header">
+            <div class="left" id="pageTitle">控制台首页</div>
+            <div class="user" id="userName">管理员</div>
+        </div>
+
+        <div class="content">
+            <!-- 首页 -->
+            <div class="page active" id="page-home">
+                <div class="grid">
+                    <div class="card"><div class="icon blue"><i class="fa fa-users"></i></div><div class="text"><div class="num">126</div><div>在职员工</div></div></div>
+                    <div class="card"><div class="icon green"><i class="fa fa-clipboard-check"></i></div><div class="text"><div class="num">98.6%</div><div>出勤率</div></div></div>
+                    <div class="card"><div class="icon orange"><i class="fa fa-hourglass"></i></div><div class="text"><div class="num">12</div><div>待审批</div></div></div>
+                    <div class="card"><div class="icon purple"><i class="fa fa-sack-dollar"></i></div><div class="text"><div class="num">8</div><div>待发薪资</div></div></div>
+                </div>
+            </div>
+
+            <!-- 请假加班 -->
+            <div class="page" id="page-leave">
+                <div class="admin-menu panel">
+                    <h3>请假申请审批</h3>
+                    <table>
+                        <tr><th>员工</th><th>类型</th><th>时间</th><th>状态</th><th>操作</th></tr>
+                        <tr>
+                            <td>张三</td>
+                            <td>事假</td>
+                            <td>2026-04-05</td>
+                            <td><span class="tag orange" id="leaveStatus">待审核</span></td>
+                            <td>
+                                <button class="btn green" onclick="passLeave()">通过</button>
+                                <button class="btn red" onclick="failLeave()">拒绝</button>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="admin-menu panel">
+                    <h3>加班申请审批</h3>
+                    <table>
+                        <tr><th>员工</th><th>时长</th><th>时间</th><th>状态</th><th>操作</th></tr>
+                        <tr>
+                            <td>张三</td>
+                            <td>3小时</td>
+                            <td>2026-04-05</td>
+                            <td><span class="tag orange" id="overStatus">待审核</span></td>
+                            <td>
+                                <button class="btn green" onclick="passOver()">通过</button>
+                                <button class="btn red" onclick="failOver()">拒绝</button>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="panel">
+                    <button class="btn" onclick="alert('请假申请成功')">申请请假</button>
+                    <button class="btn orange" onclick="alert('加班申请成功')">申请加班</button>
+                    <h3>我的请假记录</h3>
+                    <table><tr><th>类型</th><th>时间</th><th>状态</th></tr>
+                        <tr><td>事假</td><td>2026-04-05</td><td><span class="tag orange" id="uLeave">待审核</span></td></tr>
+                    </table>
+                </div>
+                <div class="panel">
+                    <h3>我的加班记录</h3>
+                    <table><tr><th>时长</th><th>时间</th><th>状态</th></tr>
+                        <tr><td>3小时</td><td>2026-04-05</td><td><span class="tag orange" id="uOver">待审核</span></td></tr>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 薪资明细 -->
+            <div class="page" id="page-salary">
+                <div class="panel">
+                    <h3>2026年04月 工资明细</h3>
+                    <table>
+                        <tr><th>薪资项目</th><th>金额(元)</th><th>说明</th></tr>
+                        <tr><td>基本工资</td><td class="pay-add">6000.00</td><td>底薪</td></tr>
+                        <tr><td>绩效奖金</td><td class="pay-add">1800.00</td><td>考核</td></tr>
+                        <tr><td>全勤奖励</td><td class="pay-add">300.00</td><td>无迟到</td></tr>
+                        <tr><td>加班工资</td><td class="pay-add">860.00</td><td>已审批</td></tr>
+                        <tr><td>岗位补贴</td><td class="pay-add">500.00</td><td>餐补交通</td></tr>
+                        <tr style="border-top:2px solid #eee"><td><strong>应发合计</strong></td><td class="pay-add"><strong>9460.00</strong></td><td></td></tr>
+                        <tr><td>五险一金</td><td class="pay-sub">1280.00</td><td>个人部分</td></tr>
+                        <tr><td>个人所得税</td><td class="pay-sub">215.50</td><td>计税</td></tr>
+                        <tr><td>请假扣款</td><td class="pay-sub">0.00</td><td>无</td></tr>
+                        <tr style="border-top:2px solid #eee"><td><strong>实发工资</strong></td><td class="pay-add"><strong>7964.50</strong></td><td>到手</td></tr>
+                        <tr><td>发放状态</td><td colspan="2"><span class="tag green">已发放</span></td></tr>
+                    </table>
+                </div>
+
+                <div class="admin-menu panel">
+                    <h3>管理员 - 全体员工薪资</h3>
+                    <table>
+                        <tr><th>员工</th><th>月份</th><th>应发</th><th>扣除</th><th>实发</th><th>状态</th></tr>
+                        <tr><td>张三</td><td>2026-04</td><td>9460</td><td>1495.5</td><td>7964.5</td><td><span class="tag green">已发放</span></td></tr>
+                    </table>
+                </div>
+            </div>
+
+            <div class="page" id="page-employee"><div class="panel"><h3>员工管理</h3></div></div>
+            <div class="page" id="page-dept"><div class="panel"><h3>部门岗位</h3></div></div>
+            <div class="page" id="page-shift"><div class="panel"><h3>班次管理</h3></div></div>
+            <div class="page" id="page-attendance"><div class="panel"><h3>打卡记录</h3></div></div>
+        </div>
+    </div>
+</div>
+
+<script>
+// 本地模拟用户库
+let userList = [
+    { account: 'admin', pwd: '123456', role: 'admin' },
+    { account: 'user', pwd: '123456', role: 'user' }
+];
+
+let currentUser = { role: 'admin' };
+
+// 切换注册/登录
+function goReg() {
+    document.getElementById('loginForm').style.display = 'none';
+    document.getElementById('regForm').style.display = 'block';
+}
+function goLogin() {
+    document.getElementById('regForm').style.display = 'none';
+    document.getElementById('loginForm').style.display = 'block';
+}
+
+// 注册
+function doReg() {
+    let account = document.getElementById('regUser').value.trim();
+    let pwd = document.getElementById('regPwd').value.trim();
+    if (!account || !pwd) {
+        alert('账号密码不能为空');
+        return;
+    }
+    // 判断是否已存在
+    let has = userList.some(u => u.account === account);
+    if (has) {
+        alert('账号已存在');
+        return;
+    }
+    userList.push({ account: account, pwd: pwd, role: 'user' });
+    alert('注册成功！请登录');
+    goLogin();
+}
+
+// 登录
+function doLogin() {
+    let account = document.getElementById('loginUser').value.trim();
+    let pwd = document.getElementById('loginPwd').value.trim();
+    let user = userList.find(u => u.account === account && u.pwd === pwd);
+    if (!user) {
+        alert('账号或密码错误');
+        return;
+    }
+    currentUser.role = user.role;
+    document.getElementById('loginPage').style.display = 'none';
+    document.getElementById('systemPage').style.display = 'flex';
+    document.getElementById('userName').innerText = user.role === 'admin' ? '管理员' : '普通员工';
+
+    if (currentUser.role === 'user') {
+        document.querySelectorAll('.admin-menu').forEach(i => i.classList.add('hide'));
+    } else {
+        document.querySelectorAll('.admin-menu').forEach(i => i.classList.remove('hide'));
+    }
+}
+
+// 退出
+function logout() {
+    if (confirm('确定退出？')) location.reload();
+}
+
+// 切换页面
+function showPage(page) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById('page-' + page).classList.add('active');
+    const titles = {
+        home: '控制台', employee: '员工管理', dept: '部门岗位',
+        shift: '班次管理', attendance: '打卡记录', leave: '请假加班', salary: '薪资明细'
+    };
+    document.getElementById('pageTitle').innerText = titles[page];
+}
+
+// 审批状态
+function passLeave() {
+    let s = document.getElementById('leaveStatus');
+    let u = document.getElementById('uLeave');
+    s.className = 'tag green'; s.innerText = '已通过';
+    u.className = 'tag green'; u.innerText = '已通过';
+    alert('请假已通过');
+}
+function failLeave() {
+    let s = document.getElementById('leaveStatus');
+    let u = document.getElementById('uLeave');
+    s.className = 'tag red'; s.innerText = '已拒绝';
+    u.className = 'tag red'; u.innerText = '已拒绝';
+    alert('请假已拒绝');
+}
+function passOver() {
+    let s = document.getElementById('overStatus');
+    let u = document.getElementById('uOver');
+    s.className = 'tag green'; s.innerText = '已通过';
+    u.className = 'tag green'; u.innerText = '已通过';
+    alert('加班已通过');
+}
+function failOver() {
+    let s = document.getElementById('overStatus');
+    let u = document.getElementById('uOver');
+    s.className = 'tag red'; s.innerText = '已拒绝';
+    u.className = 'tag red'; u.innerText = '已拒绝';
+    alert('加班已拒绝');
+}
+</script>
+</body>
+</html>
